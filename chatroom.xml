@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<chatroom>
+  <users><user name="fdf2"/><user name="fsdf"/><user name="qwe"/><user name="fsdf"/><user name="qwe"/><user name="fsdf"/><user name="qwe"/><user name="qwe"/><user name="qwea"/><user name="u1"/><user name="user2"/><user name="test1"/><user name="test2"/><user name="test3"/><user name="test4"/><user name="test"/><user name="test1"/><user name="abc"/><user name="abc2"/><user name="user3"/><user name="user2"/><user name="user2"/><user name="abc"/><user name="def"/></users>
+  <messages><message name="test1">abc</message><message name="abc">qwe</message><message name="abc2">message1</message><message name="user3">message2</message><message name="def">ok</message><message name="def">whats up</message><message name="def">yes/</message></messages>
+</chatroom>
