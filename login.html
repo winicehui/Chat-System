@@ -8,17 +8,15 @@
         //<![CDATA[
         function clearMessage() {
             try {
-                var username_elem = window.parent.frames["message"].document.getElementById("username");
-                if (username_elem == null) {
+                var name_field = window.parent.frames["message"].document.getElementById("username");
+                if (name_field == null) {
                 	console.log("username_elem is null, wait for reload");
                 	setTimeout("clearMessage()", 100);
                 	return ;
                 }
-                name = username_elem.value;
-                console.log("In login.html\n" + name);
+                name = name_field.value;
+                
                 if (name != "") {
-//                	console.log("reload message.php from login.html");
-//                    window.parent.frames["message"].location.reload();
                     window.location.href = "client.php";
                 }
             } catch (e) {
@@ -36,13 +34,16 @@
                 return false;
             }
 
-            //username cannot contain illeagl character
+            console.log("is it here?1");
+
+            //username cannot contain illegal character
             var reg = new RegExp("\\W");
-            if (input.match(reg)) {
-                alert("Invalid user name!\nPlease don't use space and the following characters.\n\"\':;<>()[]{}!@#$%^&*-+=");
-                return false;
+            console.log((/\d/.test(input)));
+            if (input.match(reg)||(/\d/.test(input))) {
+                alert("Invalid user name!\nPlease don't use digits, spaces and the following characters.\n\"\':;<>()[]{}!@#$%^&*-+=");
+                return false;   
             }
-            return true;
+
         }
 
         </script>
@@ -58,6 +59,7 @@
                 <tr align="center">
                     <td colspan="2"><input class="button" type="submit" value="Go!" style="width: 150px" /></td>
                 </tr>
+                
             </table>
         </form>
     </body>

@@ -15,5 +15,20 @@ if (!$xmlh->fileExist()) {
 }
 
 
+setcookie("name", "");
+$xmlh->openFile();
+$users= $xmlh-> getElement("users");
+$childNodeList = $users->childNodes;
+
+$messages= $xmlh-> getElement("messages");
+$childNodeList = $messages->childNodes;
+
+
+$xmlh-> saveFile();
+
+echo "<script> window.parent.location.reload() </script>";
+
+
+//no while loop stuff
 
 ?>

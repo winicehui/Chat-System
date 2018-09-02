@@ -24,7 +24,7 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
         function load() {
             var username = document.getElementById("username");
             username.value = "<?php print $name ?>";
-            console.log("In message.php\n" + username.value);
+            
             if (username.value == "") {
                 return;
             }
@@ -43,11 +43,11 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
             var username = document.getElementById("username");
             if (username.value != "") {
                 //request = new ActiveXObject("Microsoft.XMLHTTP");
-                request =new XMLHttpRequest();
-                request.open("POST", "logout.php", true);
-                request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                request.send(null);
-                username.value = "";
+                //request =new XMLHttpRequest();
+                //request.open("POST", "logout.php", true);
+                //request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                //request.send(null);
+                //username.value = "";
             }
             if (loadTimer != null) {
                 loadTimer = null;
@@ -62,7 +62,7 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
             request.open("POST", "server.php", true);
             request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             request.send("datasize=" + datasize);
-            console.log("send datasize = " + datasize);
+            
         }
 
         function stateChange() {
@@ -88,19 +88,50 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
             var messages = xmlDoc.getElementsByTagName("message");
 
             // create a string for the messages
+            var count=0;
             /* Add your code here */
-			console.log(messages);
-			for (var i = lastMsgID; i < messages.length; i++) {
-				var msg = messages.item(i);
-				showMessage(msg.getAttribute("name"), msg.firstChild.nodeValue);
-			}
+            for (var i = 0; i <messages.length; i++){
+                var nameStr = messages[i].getAttribute("name");
+                var contentStr = messages[i].firstChild.nodeValue;  
+                
+                if(contentStr=="__EMPTY__"){
+                    count++;
+                    continue; 
+                }
 
 
+                while(contentStr.length>100){
+                    var tempContentStr=contentStr;
+                    contentStr= contentStr.substring(0,100)+"-";
+                    showMessage(nameStr, contentStr, messages[i].getAttribute("color"));
+                    contentStr=tempContentStr.substring(100);
+                    nameStr=" ";
+                    count--;
+                }
+                    showMessage(nameStr, contentStr, messages[i].getAttribute("color"));
+
+
+                
+            }
+
+            lastMsgID = messages.length;
+
+            var newHeight = ((lastMsgID + 1) * 20) + 35;
+            if (newHeight < 340) {
+                newHeight = 340;
+            }
+
+            var svg_doc = document.getElementById("svg_doc");
+            svg_doc.setAttribute("height", newHeight);
+            var chatroom_bg = svg_doc.getElementById("chatroom_bg");
+            chatroom_bg.setAttribute("height", newHeight);
+            document.getElementById("svg_div").scrollTo(0, newHeight);
+            window.scrollTo(0, newHeight);
         }
 
         function showMessage(nameStr, contentStr){
-				console.log(nameStr)
-				console.log(contentStr)
+				
+
                 var node = document.getElementById("chattext");
                 // Create the name text span
                 var nameNode = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
@@ -114,22 +145,64 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
                 node.appendChild(nameNode);
 
                 // Create the score text span
-                var conetentNode = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+                var contentNode = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
 
                 // Set the attributes and create the text
-                conetentNode.setAttribute("x", 200);
-                conetentNode.appendChild(document.createTextNode(contentStr));
+                contentNode.setAttribute("x", 200);
+                
+                //contentNode.appendChild(document.createTextNode(contentStr));
+
+                var curr_index = 0;
+                while(curr_index != -1) {
+                    var non_url_str = null;
+                    var url_str = null;
+                    
+                    var index_of_http = contentStr.indexOf("http://", curr_index);
+                    if (index_of_http == -1) {
+                        non_url_str = contentStr.substring(curr_index);
+                        curr_index = -1;
+                    }
+                    else {
+                        non_url_str = contentStr.substring(curr_index,index_of_http);
+                        var index_of_space = contentStr.indexOf(" ", index_of_http);
+                        
+                        if (index_of_space == -1) {
+                            url_str = contentStr.substring(index_of_http);
+                        }
+                        else {
+                            url_str = contentStr.substring(index_of_http, index_of_space);
+                        }
+                        curr_index = index_of_space;
+                    }
+                    
+                    if (non_url_str != null && non_url_str != "") {
+                        contentNode.appendChild(document.createTextNode(non_url_str));
+                    }
+                    
+                    if (url_str != null && url_str != "") {
+                        var link_node = document.createElementNS("http://www.w3.org/2000/svg","a");
+                        link_node.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", url_str);
+                        link_node.setAttribute("target","_blank");
+                        link_node.setAttribute("style", "text-decoration:underline");
+                        link_node.appendChild(document.createTextNode(url_str));
+                        contentNode.appendChild(link_node);
+                    }
+                }
+                
 
                 // Add the name to the text node
-                node.appendChild(conetentNode);
+                
+                    node.appendChild(contentNode);
+                
         }
 
         //]]>
         </script>
     </head>
 
-    <body style="text-align: left" onload="load()" onunload="unload()">
-    <svg width="800px" height="2000px" id="svgdoc"
+   <body style="text-align: left" onload="load()" onunload="unload()">
+    <div id="svg_div" style=" height:340px; width:200px">
+    <svg width="1340px" height="360px" id="svg_doc"
      xmlns="http://www.w3.org/2000/svg"
      xmlns:xhtml="http://www.w3.org/1999/xhtml"
      xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -137,15 +210,17 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
      >
 
         <g id="chatroom" style="visibility:hidden">
-        <rect id="chatroom_bg" width="520" height="2000" style="fill:white;stroke:red;stroke-width:2"/>
-        <text x="260" y="40" style="fill:red;font-size:30px;font-weight:bold;text-anchor:middle">Chat Window</text>
-        <text id="chattext" y="45" style="font-size: 20px;font-weight:bold"/>
-      </g>
+        <rect id="chatroom_bg" width="1340" height="2000" style="fill:#DB7093;stroke:white;stroke-width:2"/>
+        <text x="650" y="40" style="fill:black;font-size:30px;font-weight:bold;text-anchor:middle">Chat Window</text>
+        <text id="chattext" y="45" style=" fill: white; font-size: 20px;font-weight:bold"/>
+        </g>
   </svg>
 
          <form action="">
             <input type="hidden" value="<?php print $name; ?>" id="username" />
         </form>
+
+        </div>
 
     </body>
 </html>

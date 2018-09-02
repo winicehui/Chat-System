@@ -23,7 +23,6 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
             //delete this line
             //window.parent.frames["message"].document.getElementById("username").setAttribute("value", name)
-			console.log("reload message.php from client.php");
             window.parent.frames["message"].location.reload();
 
             setTimeout("document.getElementById('msg').focus()",100);
@@ -48,7 +47,16 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
         </form>
 
         <!--logout button-->
+        <form action="logout.php" method="post" onsubmit="alert('Goodbye')">
+            <table border="0" cellspacing="5" cellpadding="0">
+                <tr>
+                    <td>
+                    <input class="button" type="submit" value= "Logout" style= "width:200px" />
+                    </td>
+                </tr>
+            </table>
 
+        </form>
 
     </body>
 </html>
